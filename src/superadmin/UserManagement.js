@@ -33,7 +33,7 @@ function UserManagement() {
       ];
       setUsers(sampleUsers);
     }
-  }, []);
+  }, [users.length]);
 
   const countries = [...new Set(users.map(u => u.country))].sort();
 

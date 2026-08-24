@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../context/ThemeContext';
 import { UsersIcon, UserIcon, ChartIcon } from '../superadmin/Icons';
 
 function AdminOverview({ admin }) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const [stats, setStats] = useState({
     totalUsers: 0,
     assignedCountries: 0,

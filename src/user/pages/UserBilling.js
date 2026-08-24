@@ -7,15 +7,17 @@ function UserBilling({ user }) {
   const [method, setMethod] = useState('Crypto USDT (TRC20)');
   const [successMsg, setSuccessMsg] = useState('');
 
+  useEffect(() => {
+    const all = JSON.parse(localStorage.getItem('transactions') || '[]');
+    const myTx = all.filter(t => t.userId === user?.id || t.userEmail === user?.email);
+    setTransactions(myTx);
+  }, [user]);
+
   const loadTx = () => {
     const all = JSON.parse(localStorage.getItem('transactions') || '[]');
     const myTx = all.filter(t => t.userId === user?.id || t.userEmail === user?.email);
     setTransactions(myTx);
   };
-
-  useEffect(() => {
-    loadTx();
-  }, [user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

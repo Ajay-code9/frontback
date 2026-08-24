@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../context/ThemeContext';
 
 function DashboardOverview() {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const [stats, setStats] = useState({
     totalAum: 0,
     netDeposits: 0,

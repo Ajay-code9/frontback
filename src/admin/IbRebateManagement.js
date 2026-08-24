@@ -24,7 +24,7 @@ function IbRebateManagement({ admin }) {
         <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-purple-200 dark:border-slate-700 shadow-sm">
           <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Commission Rebate Rate</p>
           <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">${rebateRate.toFixed(2)} / Lot</p>
-          <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Earned on every traded lot</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Total {lots} Lots Traded by Clients</p>
         </div>
         <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-purple-200 dark:border-slate-700 shadow-sm">
           <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Rebate Wallet Balance</p>

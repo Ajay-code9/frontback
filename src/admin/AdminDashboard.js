@@ -4,6 +4,8 @@ import { useAdminAuth } from '../context/AdminAuthContext';
 import { useTheme } from '../context/ThemeContext';
 import AdminUserManagement from './AdminUserManagement';
 import AdminOverview from './AdminOverview';
+import IbRebateManagement from './IbRebateManagement';
+import IbMarketingTools from './IbMarketingTools';
 import { DashboardIcon, UserIcon, LogoutIcon, ChevronLeftIcon, ChevronRightIcon, SunIcon, MoonIcon } from '../superadmin/Icons';
 
 function AdminDashboard() {
@@ -25,12 +27,11 @@ function AdminDashboard() {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
-    { id: 'users', label: 'User Management', icon: UserIcon },
+    { id: 'dashboard', label: 'IB Dashboard', icon: DashboardIcon },
+    { id: 'rebates', label: 'Rebates & Wallet', icon: DashboardIcon },
+    { id: 'marketing', label: 'Marketing Tools', icon: DashboardIcon },
+    { id: 'users', label: 'Referred Traders', icon: UserIcon },
   ];
-
-  // Check if admin has permission to view users
-  const canViewUsers = admin.permissions && admin.permissions.includes('view_users');
 
   return (
     <div className={`min-h-screen flex transition-colors duration-300 ${
@@ -43,13 +44,13 @@ function AdminDashboard() {
         isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'
       } border-r transition-all duration-300 ease-in-out flex flex-col fixed h-full z-20 shadow-lg`}>
         {/* Logo/Brand */}
-        <div className={`p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-200'} bg-gray-900 dark:bg-slate-700`}>
+        <div className={`p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-200'} bg-purple-900 dark:bg-slate-700`}>
           <div className="flex items-center justify-between">
             {sidebarOpen && (
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">Admin Panel</h1>
-                <p className="text-xs text-white/90 mt-0.5 font-normal">
-                  {admin.name || admin.userId}
+                <h1 className="text-xl font-bold text-white tracking-tight">IB Partner Console</h1>
+                <p className="text-xs text-white/90 mt-0.5 font-normal truncate">
+                  {admin.name || admin.userId} ({admin.ibCode || 'IB-1042'})
                 </p>
               </div>
             )}
@@ -65,11 +66,6 @@ function AdminDashboard() {
         {/* Navigation Menu */}
         <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto bg-white dark:bg-slate-800">
           {menuItems.map((item) => {
-            // Hide users menu if no permission
-            if (item.id === 'users' && !canViewUsers) {
-              return null;
-            }
-            
             const IconComponent = item.icon;
             const isActive = activeTab === item.id;
             return (
@@ -78,13 +74,13 @@ function AdminDashboard() {
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md transition-all duration-150 ${
                   isActive
-                    ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white font-medium'
-                    : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700/50'
+                    ? 'bg-purple-100 dark:bg-slate-700 text-purple-900 dark:text-white font-medium'
+                    : 'text-gray-700 dark:text-slate-300 hover:bg-purple-50 dark:hover:bg-slate-700/50'
                 }`}
               >
-                <IconComponent className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-slate-400'}`} />
+                <IconComponent className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-purple-900 dark:text-white' : 'text-gray-600 dark:text-slate-400'}`} />
                 {sidebarOpen && (
-                  <span className={`text-sm ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-slate-300'}`}>{item.label}</span>
+                  <span className={`text-sm ${isActive ? 'text-purple-900 dark:text-white' : 'text-gray-700 dark:text-slate-300'}`}>{item.label}</span>
                 )}
               </button>
             );
@@ -94,17 +90,13 @@ function AdminDashboard() {
         {/* User Section & Logout */}
         <div className={`p-4 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'} bg-white dark:bg-slate-800`}>
           <div className={`flex items-center space-x-3 mb-3 ${!sidebarOpen && 'justify-center'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-medium text-gray-700 dark:text-slate-300 text-xs ${
-              isDark ? 'bg-slate-700' : 'bg-gray-200'
-            }`}>
-              {admin.name ? admin.name.charAt(0).toUpperCase() : admin.userId.charAt(0).toUpperCase()}
+            <div className="w-8 h-8 rounded-full flex items-center justify-center font-medium text-white text-xs bg-purple-600">
+              IB
             </div>
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-gray-900 dark:text-white truncate">
-                  {admin.name || admin.userId}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-slate-400 truncate">Admin</p>
+                <p className="font-medium text-sm text-gray-900 dark:text-white truncate">{admin.name || admin.userId}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 truncate">Introducing Broker</p>
               </div>
             )}
           </div>
@@ -138,8 +130,8 @@ function AdminDashboard() {
                 >
                   {isDark ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
                 </button>
-                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center font-medium text-gray-700 dark:text-slate-300 text-xs">
-                  {admin.name ? admin.name.charAt(0).toUpperCase() : admin.userId.charAt(0).toUpperCase()}
+                <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-medium text-xs">
+                  IB
                 </div>
               </div>
             </div>
@@ -149,14 +141,9 @@ function AdminDashboard() {
         {/* Main Content */}
         <main className="p-6">
           {activeTab === 'dashboard' && <AdminOverview admin={admin} />}
-          {activeTab === 'users' && canViewUsers && <AdminUserManagement admin={admin} />}
-          {activeTab === 'users' && !canViewUsers && (
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-8">
-              <p className="text-gray-600 dark:text-slate-400">
-                You don't have permission to view users.
-              </p>
-            </div>
-          )}
+          {activeTab === 'rebates' && <IbRebateManagement admin={admin} />}
+          {activeTab === 'marketing' && <IbMarketingTools admin={admin} />}
+          {activeTab === 'users' && <AdminUserManagement admin={admin} />}
         </main>
       </div>
     </div>

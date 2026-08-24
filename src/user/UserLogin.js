@@ -7,34 +7,53 @@ function UserLogin() {
   const { login } = useUserAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('mike@example.com');
+  const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  // Initialize users if they don't exist or update existing users with passwords
+  // Initialize traders if they don't exist
   React.useEffect(() => {
     const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    // If no users exist, create sample users
-    if (existingUsers.length === 0) {
-      const sampleUsers = [
-        { id: '1', name: 'John Doe', email: 'john@example.com', password: 'password123', country: 'United States', createdAt: new Date().toISOString() },
-        { id: '2', name: 'Jane Smith', email: 'jane@example.com', password: 'password123', country: 'United Kingdom', createdAt: new Date().toISOString() },
-        { id: '3', name: 'Mike Johnson', email: 'mike@example.com', password: 'password123', country: 'Canada', createdAt: new Date().toISOString() },
-        { id: '4', name: 'Sarah Williams', email: 'sarah@example.com', password: 'password123', country: 'Australia', createdAt: new Date().toISOString() },
-        { id: '5', name: 'David Brown', email: 'david@example.com', password: 'password123', country: 'Germany', createdAt: new Date().toISOString() }
-      ];
-      localStorage.setItem('users', JSON.stringify(sampleUsers));
-    } else {
-      // Update existing users to ensure they have passwords
-      const updatedUsers = existingUsers.map(user => {
-        if (!user.password) {
-          return { ...user, password: 'password123' };
+    if (existingUsers.length === 0 || !existingUsers[0].tradingAccounts) {
+      const sampleTraders = [
+        { 
+          id: '1', 
+          name: 'Mike Johnson', 
+          email: 'mike@example.com', 
+          password: 'password123', 
+          country: 'Canada', 
+          kycStatus: 'Verified',
+          walletBalance: 4500.00,
+          equity: 15820.50,
+          totalPnl: +2840.25,
+          winRate: '68.5%',
+          ibCode: 'IB-1042',
+          tradingAccounts: [
+            { id: 'acc-1', accountNo: '8841920', platform: 'MT5', type: 'Real', leverage: '1:500', balance: 10000.00, server: 'Broker-Live-01', currency: 'USD' },
+            { id: 'acc-2', accountNo: '1092831', platform: 'MT4', type: 'Demo', leverage: '1:100', balance: 4500.00, server: 'Broker-Demo-01', currency: 'USD' }
+          ],
+          createdAt: new Date().toISOString() 
+        },
+        { 
+          id: '2', 
+          name: 'John Doe', 
+          email: 'john@example.com', 
+          password: 'password123', 
+          country: 'United States', 
+          kycStatus: 'Verified',
+          walletBalance: 2150.00,
+          equity: 8200.00,
+          totalPnl: +1240.00,
+          winRate: '62.0%',
+          ibCode: 'IB-1042',
+          tradingAccounts: [
+            { id: 'acc-3', accountNo: '7721049', platform: 'MT5', type: 'Real', leverage: '1:200', balance: 6050.00, server: 'Broker-Live-01', currency: 'USD' }
+          ],
+          createdAt: new Date().toISOString() 
         }
-        return user;
-      });
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      ];
+      localStorage.setItem('users', JSON.stringify(sampleTraders));
     }
   }, []);
 
@@ -42,30 +61,15 @@ function UserLogin() {
     e.preventDefault();
     setError('');
 
-    // Get all users from localStorage
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    // Debug: Log users to console (remove in production)
-    console.log('All users:', users);
-    console.log('Login attempt:', { email: email.trim().toLowerCase(), password });
-    
-    // Find user with matching credentials (case-insensitive email)
-    const trimmedEmail = email.trim();
+    const trimmedEmail = email.trim().toLowerCase();
     const trimmedPassword = password.trim();
     
     const user = users.find(
-      u => {
-        const userEmail = (u.email || '').toLowerCase().trim();
-        const inputEmail = trimmedEmail.toLowerCase();
-        const emailMatch = userEmail === inputEmail;
-        const passwordMatch = (u.password || '').trim() === trimmedPassword;
-        
-        return emailMatch && passwordMatch;
-      }
+      u => (u.email || '').toLowerCase().trim() === trimmedEmail && (u.password || '').trim() === trimmedPassword
     );
 
     if (user) {
-      // Login successful - store user data
       login(user);
       navigate('/dashboard');
     } else {
@@ -74,110 +78,189 @@ function UserLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-blue-50 dark:bg-slate-900">
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded bg-white dark:bg-slate-800 border border-blue-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition"
-        >
-          {theme === 'dark' ? (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
-      </div>
-      <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-lg shadow p-6 border border-blue-200 dark:border-slate-700">
-        <div className="text-center mb-6">
-          <div className="inline-block p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg mb-4">
-            <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-950 text-white font-sans overflow-x-hidden relative">
+      {/* Ambient Background Glowing Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      {/* Theme Switcher Floating Button */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-6 right-6 z-30 p-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-300 backdrop-blur-md transition shadow-lg flex items-center gap-2 text-xs font-semibold"
+      >
+        {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      </button>
+
+      {/* Left Column: Hero Visual & Trader Features */}
+      <div className="lg:w-7/12 p-8 lg:p-16 flex flex-col justify-between relative z-10 bg-gradient-to-br from-slate-950 via-blue-950/40 to-slate-950 border-r border-slate-800/60">
+        <div>
+          {/* Logo / Brand Header */}
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-blue-200 to-slate-300 bg-clip-text text-transparent">
+                TRADER CLIENT CABINET
+              </h1>
+              <p className="text-xs text-blue-400 font-semibold tracking-wider uppercase">MetaTrader 4/5 Trading Portal</p>
+            </div>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">Welcome Back</h1>
-          <p className="text-sm text-gray-600 dark:text-slate-400">Sign in to your account</p>
+
+          {/* Hero Heading */}
+          <div className="max-w-xl space-y-4 mb-10">
+            <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+              ⚡ Ultra-Low Spreads & 1-Click Copy Trading
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-black leading-tight text-white">
+              Trade Global Markets with Confidence.
+            </h2>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Instant USDT crypto deposits, MT4/MT5 live account management, 1-click strategy copy trading, and fast automated withdrawals.
+            </p>
+          </div>
+
+          {/* Trader Feature Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+              <p className="text-xs text-slate-400 mb-1">Leverage Up To</p>
+              <p className="text-lg font-bold text-cyan-400">1:1000</p>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+              <p className="text-xs text-slate-400 mb-1">Instant Funding</p>
+              <p className="text-lg font-bold text-emerald-400">USDT TRC20</p>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+              <p className="text-xs text-slate-400 mb-1">Copy Trading ROI</p>
+              <p className="text-lg font-bold text-purple-400">Up to +312%</p>
+            </div>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-3 py-2 rounded text-sm">
-              {error}
-            </div>
-          )}
-
+        {/* Footer Metrics */}
+        <div className="pt-8 border-t border-slate-800/80 grid grid-cols-3 gap-4 text-center">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-              Email Address
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-blue-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              placeholder="Enter your email"
-              required
-            />
+            <p className="text-xl font-black text-white">0.0 Pip</p>
+            <p className="text-[11px] text-slate-400 uppercase tracking-wider mt-0.5">Raw Spreads</p>
           </div>
-
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 pr-10 border border-blue-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                placeholder="Enter your password"
-                required
-              />
+            <p className="text-xl font-black text-blue-400">MT4 & MT5</p>
+            <p className="text-[11px] text-slate-400 uppercase tracking-wider mt-0.5">Platforms Supported</p>
+          </div>
+          <div>
+            <p className="text-xl font-black text-emerald-400">Instant</p>
+            <p className="text-[11px] text-slate-400 uppercase tracking-wider mt-0.5">Automated Deposits</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Trader Login Form */}
+      <div className="lg:w-5/12 p-8 lg:p-12 flex items-center justify-center relative z-10 bg-slate-950">
+        <div className="max-w-md w-full space-y-8 bg-slate-900/90 backdrop-blur-xl p-8 rounded-2xl border border-slate-800 shadow-2xl shadow-blue-900/20">
+          
+          {/* Portal Switcher Header Tabs */}
+          <div>
+            <div className="flex rounded-xl bg-slate-950 p-1 border border-slate-800 mb-6">
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => navigate('/')}
+                className="flex-1 py-2 text-xs font-semibold text-slate-400 hover:text-white transition"
               >
-                {showPassword ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.29 3.29m0 0L9.88 9.88m-3.59-3.59l3.59 3.59M12 12l.01.01M21 12a9.97 9.97 0 01-1.563 3.029m-1.858-1.858A3 3 0 1115.243 8.243M12 12l3.29 3.29m0 0L21 21M15.29 15.29L12 12" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
+                Superadmin
+              </button>
+              <button
+                onClick={() => navigate('/admin')}
+                className="flex-1 py-2 text-xs font-semibold text-slate-400 hover:text-white transition"
+              >
+                IB Partner
+              </button>
+              <button
+                onClick={() => navigate('/user')}
+                className="flex-1 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md transition"
+              >
+                Trader
               </button>
             </div>
+
+            <h2 className="text-2xl font-bold text-white tracking-tight">Trader Cabinet Login</h2>
+            <p className="text-xs text-slate-400 mt-1">Sign in to manage your trading accounts & funds</p>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center">
-              <input type="checkbox" className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-blue-300" />
-              <span className="ml-2 text-gray-600 dark:text-slate-400">Remember me</span>
-            </label>
-            <a href="#" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-              Forgot password?
-            </a>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 px-4 py-3 rounded-xl text-xs font-semibold">
+                ⚠️ {error}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+                Email Address
+              </label>
+              <div className="relative">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 pr-10 bg-slate-950 border border-slate-700 rounded-xl text-white font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  placeholder="Enter password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3.5 bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-blue-600/30 active:scale-[0.98]"
+            >
+              Sign In to Trader Cabinet
+            </button>
+          </form>
+
+          {/* Quick Demo Credentials Footer */}
+          <div className="pt-6 border-t border-slate-800 text-center">
+            <p className="text-xs text-slate-400 mb-3 font-medium">Quick Demo One-Click Portals:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => navigate('/')}
+                className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-gray-300 border border-gray-700 rounded-lg text-xs font-semibold transition"
+              >
+                Login as Superadmin
+              </button>
+              <button
+                onClick={() => navigate('/admin')}
+                className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-800/40 rounded-lg text-xs font-semibold transition"
+              >
+                Login as IB Admin
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-3 font-mono">Prefilled: mike@example.com / password123</p>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 dark:bg-blue-500 text-white py-2 rounded font-medium hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          >
-            Sign In
-          </button>
-        </form>
-
-        <div className="mt-4 text-center text-sm text-gray-600 dark:text-slate-400">
-          <p>Demo: mike@example.com / password123</p>
         </div>
       </div>
     </div>
@@ -185,4 +268,3 @@ function UserLogin() {
 }
 
 export default UserLogin;
-

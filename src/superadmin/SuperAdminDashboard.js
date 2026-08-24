@@ -5,6 +5,10 @@ import { useTheme } from '../context/ThemeContext';
 import AdminManagement from './AdminManagement';
 import UserManagement from './UserManagement';
 import DashboardOverview from './DashboardOverview';
+import FinancialManagement from './FinancialManagement';
+import RiskManagement from './RiskManagement';
+import CopyTradingManagement from './CopyTradingManagement';
+import AuditLogs from './AuditLogs';
 import { DashboardIcon, UsersIcon, UserIcon, SettingsIcon, LogoutIcon, ChevronLeftIcon, ChevronRightIcon, SunIcon, MoonIcon } from './Icons';
 
 function SuperAdminDashboard() {
@@ -20,10 +24,13 @@ function SuperAdminDashboard() {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: DashboardIcon },
-    { id: 'admins', label: 'Admin Management', icon: UsersIcon },
-    { id: 'users', label: 'User Management', icon: UserIcon },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon },
+    { id: 'dashboard', label: 'Broker Overview', icon: DashboardIcon },
+    { id: 'risk', label: 'Risk Engine', icon: SettingsIcon },
+    { id: 'copy', label: 'Copy Trading Hub', icon: UsersIcon },
+    { id: 'financials', label: 'Deposits & Withdrawals', icon: SettingsIcon },
+    { id: 'admins', label: 'IB Management', icon: UsersIcon },
+    { id: 'users', label: 'Trader Management', icon: UserIcon },
+    { id: 'audit', label: 'Security & Audit Logs', icon: SettingsIcon },
   ];
 
   const isDark = theme === 'dark';
@@ -43,8 +50,8 @@ function SuperAdminDashboard() {
           <div className="flex items-center justify-between">
             {sidebarOpen && (
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">SuperAdmin</h1>
-                <p className="text-xs text-white/90 mt-0.5 font-normal">Control Panel</p>
+                <h1 className="text-xl font-bold text-white tracking-tight">Broker Master</h1>
+                <p className="text-xs text-white/90 mt-0.5 font-normal">Trading CRM Control</p>
               </div>
             )}
             <button
@@ -91,7 +98,7 @@ function SuperAdminDashboard() {
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm text-gray-900 dark:text-white truncate">Super Admin</p>
-                <p className="text-xs text-gray-500 dark:text-slate-400 truncate">Administrator</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 truncate">Broker Administrator</p>
               </div>
             )}
           </div>
@@ -136,14 +143,12 @@ function SuperAdminDashboard() {
         {/* Main Content */}
         <main className="p-6">
           {activeTab === 'dashboard' && <DashboardOverview />}
+          {activeTab === 'risk' && <RiskManagement />}
+          {activeTab === 'copy' && <CopyTradingManagement />}
+          {activeTab === 'financials' && <FinancialManagement />}
           {activeTab === 'admins' && <AdminManagement />}
           {activeTab === 'users' && <UserManagement />}
-          {activeTab === 'settings' && (
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-8">
-              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Settings</h3>
-              <p className="text-gray-600 dark:text-slate-400">Settings panel coming soon...</p>
-            </div>
-          )}
+          {activeTab === 'audit' && <AuditLogs />}
         </main>
       </div>
     </div>

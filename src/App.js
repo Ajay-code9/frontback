@@ -19,17 +19,18 @@ function App() {
           <AdminAuthProvider>
             <UserAuthProvider>
               <Routes>
-                {/* User Routes - Root */}
-                <Route path="/" element={<UserLogin />} />
-                <Route path="/dashboard" element={<UserProtectedRoute><UserDashboard /></UserProtectedRoute>} />
-                
-                {/* Superadmin Routes */}
+                {/* Superadmin Routes - Default Root */}
+                <Route path="/" element={<SuperAdminLogin />} />
                 <Route path="/superadmin" element={<SuperAdminLogin />} />
                 <Route path="/superadmin/dashboard" element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+
+                {/* User Routes */}
+                <Route path="/user" element={<UserLogin />} />
+                <Route path="/dashboard" element={<UserProtectedRoute><UserDashboard /></UserProtectedRoute>} />
               </Routes>
             </UserAuthProvider>
           </AdminAuthProvider>
